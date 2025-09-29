@@ -1,22 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstadd_front_bonus.c                            :+:      :+:    :+:   */
+/*   ft_error_msg.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/29 16:24:45 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/05/02 14:51:47 by tpirinen         ###   ########.fr       */
+/*   Created: 2025/08/01 18:44:28 by tpirinen          #+#    #+#             */
+/*   Updated: 2025/09/20 18:03:01 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libphilo.h"
 
-/*	Adds the node 'new' at the beginning of the list.						*/
-void	ft_lstadd_front(t_list **lst, t_list *new)
+/*	Prints an error msg to standard error and returns an error code.		*/
+int	ft_error_msg(char *err_msg, int err_code)
 {
-	if (!lst || !new)
-		return ;
-	new->next = *lst;
-	*lst = new;
+	write(2, err_msg, ft_strlen(err_msg));
+	return (err_code);
 }

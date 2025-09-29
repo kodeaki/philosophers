@@ -1,28 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*   ft_args_valid.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/16 17:53:58 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/05/03 18:54:53 by tpirinen         ###   ########.fr       */
+/*   Created: 2025/09/20 17:22:06 by tpirinen          #+#    #+#             */
+/*   Updated: 2025/09/20 18:02:10 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libphilo.h"
 
-/*	Initializes 'n' amount of memory from 's' to nullbytes.					*/
-void	ft_bzero(void *s, size_t n)
+int	ft_args_valid(int ac, char **av)
 {
-	unsigned char	*ptr;
-	size_t			i;
+	int	i;
+	int	j;
 
-	ptr = (unsigned char *)s;
-	i = 0;
-	while (i < n)
+	if (ac == 5 || ac == 6)
 	{
-		ptr[i] = '\0';
-		i++;
+		if (av[1][0] == '0')
+			return (false);
+		i = 1;
+		while (av[i])
+		{
+			j = 0;
+			while (av[i][j])
+			{
+				if (!(av[i][j] >= '0' && av[i][j] <= '9'))
+					return (false);
+				j++;
+			}
+			i++;
+		}
 	}
+	else
+		return (false);
+	return (true);
 }

@@ -1,21 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isprint.c                                       :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/15 12:21:38 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/05/03 18:01:00 by tpirinen         ###   ########.fr       */
+/*   Created: 2025/09/20 17:19:02 by tpirinen          #+#    #+#             */
+/*   Updated: 2025/09/20 18:13:51 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*	Returns a non-zero value if 'c' is a printable ascii character.
-	Otherwise returns 0.													*/
-int	ft_isprint(int c)
+#include "libphilo.h"
+
+int	main(int ac, char **av)
 {
-	if ((32 <= c && c <= 126))
+	if (ft_args_valid(ac, av) == false)
 		return (1);
-	else
-		return (0);
+	
 }
