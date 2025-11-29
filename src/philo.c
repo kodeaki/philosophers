@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:09 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/11/29 22:32:13 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/11/29 23:44:43 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,9 @@ static void	*handle_single_philo(t_philo *p)
 }
 
 /**
- * Thread entry point for a philosopher thread. Waits for the global start
- * time, enters the request/take/eat/sleep/think loop, and exits when the
+ * Thread entry point and main loop for a philosopher thread.
+ * Waits for the global start time, enters the 
+ * request/take/eat/sleep/think loop, and exits when the
  * simulation ends or the philosopher reaches its 'must_eat' count.
  *
  * @param arg Pointer to 't_philo' for this thread.
