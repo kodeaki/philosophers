@@ -1,38 +1,29 @@
+SRC := \
+	src/forks.c		\
+	src/main.c		\
+	src/monitor.c	\
+	src/philo.c		\
+	src/time.c		\
 
+NAME 	:= philo
+HEADER	:= src/philo.h
+CFLAGS 	:= -Wall -Wextra -Werror -pthread
+OBJS 	:= $(SRC:%.c=%.o)
 
-NAME			:=	philo
+%.o: %.c $(HEADER)
+	cc -c $< -o $@ $(CFLAGS)
 
-LIBFT			:=	libft/libft.a
+all: $(NAME)
 
-COMPILER		:=	cc
-CFLAGS			:=	-Wall -Wextra -Werror
-
-SRC_DIR			:= src/
-OBJ_DIR			:= obj/
-
-VPATH			:= $(SRC_DIR)
-
-SRCS			:=	main.c\
-					ft_args_valid.c
-
-OBJS			:= $(addprefix $(OBJ_DIR), $(SRCS:.c=.o))
-
-all:	$(NAME)
-
-$(NAME):	$(OBJS)
-	$(COMPILER) $(CFLAGS) $(OBJS) -o $(NAME)
-
-$(OBJ_DIR)%.o: %.c
-	@mkdir -p $(OBJ_DIR)
-	$(COMPILER) $(CFLAGS) -c $< -o $@
+$(NAME): $(OBJS)
+	cc $^ -o $@ $(CFLAGS)
 
 clean:
-	@rm -rf $(OBJ_DIR)
+	rm -f $(OBJS)
 
-fclean:
-	@rm -f philo
+fclean: clean
+	rm -f $(NAME)
 
 re: fclean all
 
-.SECONDARY: $(OBJS)
 .PHONY: all clean fclean re
