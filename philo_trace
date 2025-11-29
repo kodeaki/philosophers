@@ -1,0 +1,68 @@
+
+
+============================================================
+
+----- TRACE BEGINS -----
+
+-- Basic Error Tests --
+
+No arguments: No error message found
+
+1: No error message found
+
+1 1: No error message found
+
+1 1 1: No error message found
+
+1 1 1 1 1 1: No error message found
+
+a a a a: No error message found
+
+-1 1 1 1 1: No error message found
+
+1 -1 1 1 1: No error message found
+
+1 1 -1 1 1: No error message found
+
+1 1 1 -1 1: No error message found
+
+1 1 1 1 -1: No error message found
+
+-1 -1 -1 -1 -1: No error message found
+
+0 1 1 1: No error message found
+
+1 0 1 1: No error message found
+
+1 1 0 1: No error message found
+
+1 1 1 0: No error message found
+
+1 1 1 1 0: No error message found
+
+2147483648 100 60 60: No error message found
+
+2 2147483648 60 60: No error message found
+
+2 100 2147483648 60: No error message found
+
+2 100 60 2147483648: No error message found
+
+2 100 60 60 2147483648: No error message found
+
+-- One Philosopher Tests --
+
+-- No Death Tests --
+
+100 410 200 200 20: Timestamp error: Non numerical
+	Philo 1 eating timestamp:  Philo 1 sleep timestamp:  Philo 1 think timestamp:  Philo 2 eating timestamp:  Philo 2 sleep timestamp:  Philo 2 think timestamp: 
+
+100 410 200 200 10: Timestamp error: Non numerical
+	Philo 1 eating timestamp:  Philo 1 sleep timestamp:  Philo 1 think timestamp:  Philo 2 eating timestamp:  Philo 2 sleep timestamp:  Philo 2 think timestamp: 
+
+100 130 60 60 10: Timestamp error: Non numerical
+	Philo 1 eating timestamp:  Philo 1 sleep timestamp:  Philo 1 think timestamp:  Philo 2 eating timestamp:  Philo 2 sleep timestamp:  Philo 2 think timestamp: 
+
+-- Death Tests --
+
+---- TRACE ENDS ----
