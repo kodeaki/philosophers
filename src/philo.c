@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:09 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/11/29 23:44:43 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/02 14:58:29 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ void	philo_print(t_philo *p, enum e_state state)
 	if (p->monitor->death_printed == true)
 	{
 		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		return;
+		return ;
 	}
 	if (state == DEAD)
 		p->monitor->death_printed = true;

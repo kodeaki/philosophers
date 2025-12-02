@@ -6,11 +6,12 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 17:29:56 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/11/29 22:03:02 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/02 14:58:06 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
 /**
  * Scan waiting philosophers and grant fork access to the hungriest
  * (oldest 'last_ate' timestamp). Updates 'access_granted' under 'philo_mutex'.
@@ -58,7 +59,7 @@ void	request_and_wait_for_fork_access(t_philo *p)
 {
 	bool	stop_simulation;
 	bool	access_granted;
-	
+
 	pthread_mutex_lock(&p->monitor->philo_mutex);
 	p->waiting = true;
 	p->access_granted = false;
