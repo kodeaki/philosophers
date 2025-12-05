@@ -14,10 +14,11 @@
 
 /**
  * Set the 'start_time' and initial 'last_ate' for each philosopher once all
- * threads have been created. This arranges for a synchronized start time
- * across threads.
+ * threads have been created. (last_ate is set to the start_time so philosophers
+ * don't immediately die of starvation) This arranges for a synchronized
+ * start time across threads.
  *
- * @param m Monitor containing philosopher array and metadata.
+ * @param m Monitor containing philosopher array.
  */
 static void	start_philo_threads(t_monitor *m)
 {
@@ -39,8 +40,8 @@ static void	start_philo_threads(t_monitor *m)
 }
 
 /**
- * Initialize mutexes and spawn philosopher threads. The monitor structure
- * must have 'm->philos' and 'm->forks' allocated prior to calling this.
+ * Initialize mutexes, create philosopher threads and call
+ * start_philo_threads() to set philosopher threads in motion.
  *
  * @param m Monitor to initialize and use for thread creation.
  * @param args Parsed arguments array.
@@ -76,8 +77,6 @@ int	start_monitor(t_monitor *m, int args[5])
 /**
  * Inspect all philosophers to detect whether the simulation should end due
  * to a death or all philosophers having eaten the required number of times.
- * This function does not lock 'philo_mutex' itself, 
- * caller function (loop_monitor) holds the philo_mutex lock when calling this
  *
  * @param m Monitor containing philosophers.
  * @param dead_idx Out parameter set to index of dead philosopher (if any).

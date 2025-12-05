@@ -14,11 +14,10 @@
 
 /**
  * Initialize a 't_philo' structure with parameters from the
- * command-line arguments and monitor. Sets fork pointers, timing
- * values, and initial flags.
+ * 'args' array and monitor. Sets fork pointers, time values, and initial flags.
  *
  * @param p Philosopher to initialize.
- * @param m Monitor owning shared state (forks, mutexes).
+ * @param m Monitor owning the forks.
  * @param index Zero-based philosopher index.
  * @param args Array of parsed arguments.
  */
@@ -54,7 +53,7 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
  * update 'access_granted' and 'has_eaten', and indicate whether the
  * philosopher has reached its required eat count.
  *
- * @param p Philosopher performing the eat.
+ * @param p Philosopher eating.
  * @return 'FULL' if the philosopher reached 'must_eat', otherwise 'KEEP_EATING'
  */
 static int	eat_and_check_saturation(t_philo *p)
@@ -106,13 +105,11 @@ static void	*handle_single_philo(t_philo *p)
 /**
  * Thread entry point and main loop for a philosopher thread.
  * Waits for the global start time, enters the 
- * request/take/eat/sleep/think loop, and exits when the
+ * think/request/take/eat/sleep loop, and exits when the
  * simulation ends or the philosopher reaches its 'must_eat' count.
  *
  * @param arg Pointer to 't_philo' for this thread.
- * @return NULL pointer (thread exit value).
- * @thread-safety Uses monitor mutexes and fork mutexes to synchronize with
- * other threads.
+ * @return NULL.
  */
 void	*philo_main(void *arg)
 {
@@ -141,10 +138,9 @@ void	*philo_main(void *arg)
 }
 
 /**
- * Prints a timestamped state message for a philosopher. Uses
- * 'p->monitor->philo_mutex' to read the philosopher id and start_time
- * and to guard 'death_printed' in the monitor structure so that no messages
- * are printed after a death message.
+ * Prints a timestamped state message for a philosopher.
+ * Uses 'philo_mutex' to guard 'death_printed' in the monitor
+ * structure so that no messages are printed after a death message.
  *
  * @param p Philosopher whose state is printed.
  * @param state State enumerator indicating which message to print.

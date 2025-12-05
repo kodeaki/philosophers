@@ -13,8 +13,6 @@
 #include "philo.h"
 
 /**
- * Return the current time in microseconds since the epoch.
- *
  * @return Current time in microseconds (int64_t).
  */
 int64_t	current_time(void)
@@ -50,7 +48,8 @@ void	wait_for_start(t_philo *p)
 
 /**
  * Sleep in short segments until 'target_time', checking 'p->stop_simulation'
- * between segments so the thread can exit promptly when the simulation ends.
+ * between segments so the thread doesn't wait unnecessarily
+ * when the simulation ends.
  *
  * @param p Philosopher using the wait.
  * @param target_time Absolute time in microseconds to wait until.
@@ -80,7 +79,7 @@ void	wait_until(t_philo *p, int64_t target_time)
  * the current time.
  *
  * @param p Philosopher using the wait.
- * @param duration Duration in microseconds.
+ * @param duration Duration to wait in microseconds.
  */
 void	wait_for(t_philo *p, int64_t duration)
 {

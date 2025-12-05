@@ -14,6 +14,7 @@
 
 /**
  * Parse a positive integer from a string. Non-digits are ignored.
+ * Handles overflow of 'INT_MAX'.
  *
  * @param s Input string containing decimal digits.
  * @return Parsed integer value, -1 if overflows INT_MAX.
@@ -34,7 +35,7 @@ static int	parse_nbr(const char *s)
 }
 
 /**
- * Validate and parse program arguments into the 'args' array:
+ * Validate and parse command-line arguments into the 'args' array:
  *  args[0] = number_of_philosophers
  *  args[1] = time_to_die (ms)
  *  args[2] = time_to_eat (ms)
@@ -82,8 +83,9 @@ static int	free_forks_and_philos(t_monitor *m)
 }
 
 /**
- * Program entry: parse arguments, allocate monitor state, start monitor and
- * philosopher threads, and run the monitor loop until completion.
+ * Parse arguments, allocate monitor state, start monitor and
+ * philosopher threads, and run the monitor loop until the death
+ * of a philosopher or 'must_eat' count is reached.
  */
 int	main(int ac, char **av)
 {
