@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:36 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/02 15:11:25 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/05 20:13:50 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 # define MONITOR_RUNNING_RATE 100		// (microseconds)
 # define THREAD_START_DELAY 10000		// (microseconds)
 # define THINK_DELAY 100				// (microseconds)
-# define REQUEST_FORK_ACCESS_RATE 100	// (microseconds)
 # define WAIT_SEGMENT 100				// (microseconds)
 
 typedef struct s_philo		t_philo;
@@ -97,6 +96,10 @@ void	philo_print(t_philo *p, enum e_state state);
 void	grant_or_deny_fork_access(t_monitor *m);
 void	request_and_wait_for_fork_access(t_philo *p);
 void	take_forks(t_philo *p);
+
+// get.c
+bool 	get_stop_simulation(t_philo *p);
+int64_t get_start_time(t_philo *p);
 
 // time.c
 int64_t	current_time(void);

@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:27 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/11/29 22:12:46 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/05 19:50:15 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,9 @@ int64_t	current_time(void)
  */
 void	wait_for_start(t_philo *p)
 {
-	int64_t	start;
-
-	while (true)
-	{
-		pthread_mutex_lock(&p->monitor->philo_mutex);
-		start = p->start_time;
-		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		if (start)
-			break ;
+	while (!get_start_time(p))
 		wait_for(p, WAIT_SEGMENT);
-	}
-	wait_until(p, start);
+	wait_until(p, get_start_time(p));
 }
 
 /**
@@ -57,16 +48,10 @@ void	wait_for_start(t_philo *p)
 void	wait_until(t_philo *p, int64_t target_time)
 {
 	int64_t	difference;
-	bool	stop_simulation;
-
+	
 	difference = target_time - current_time();
-	while (difference > 0)
+	while (get_stop_simulation(p) == false && difference > 0)
 	{
-		pthread_mutex_lock(&p->monitor->philo_mutex);
-		stop_simulation = p->stop_simulation;
-		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		if (stop_simulation == true)
-			break ;
 		if (difference > WAIT_SEGMENT)
 			difference = WAIT_SEGMENT;
 		usleep(difference);

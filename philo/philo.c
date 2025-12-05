@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:09 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/02 17:18:12 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/05 20:23:01 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,18 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
 		p->fork1 = &m->forks[0];
 		p->fork2 = NULL;
 	}
-	else if (index == m->total_philos - 1)
-	{
-		p->fork1 = &m->forks[(index + 1) % m->total_philos];
-		p->fork2 = &m->forks[index];
-	}
-	else
-	{
-		p->fork1 = &m->forks[index];
-		p->fork2 = &m->forks[(index + 1) % m->total_philos];
-	}
+	// else if (index == m->total_philos - 1)
+	// {
+	// 	p->fork1 = &m->forks[0];
+	// 	p->fork2 = &m->forks[index];
+	// }
+	// else
+	// {
+	// 	p->fork1 = &m->forks[index];
+	// 	p->fork2 = &m->forks[(index + 1)];
+	// }
+	p->fork1 = &m->forks[index];
+	p->fork2 = &m->forks[(index + 1) % m->total_philos];
 	p->waiting = false;
 	p->access_granted = false;
 }
@@ -102,10 +104,57 @@ static void	*handle_single_philo(t_philo *p)
 	return (NULL);
 }
 
+void thinking(t_philo *p)
+{
+	long	slack;
+	long	max_think;
+	long	time_left;
+	long	t_think;
+	long	started_thinking;
+
+	slack = p->time_to_die - p->time_to_eat - p->time_to_sleep;
+	if (slack <= 0)
+		return ;
+	max_think = slack / 4;
+	if (p->monitor->total_philos % 2 != 0)
+		max_think = slack - (slack / 4);
+	pthread_mutex_lock(&p->monitor->philo_mutex);
+	time_left = p->time_to_die - (current_time() - p->last_ate) - p->time_to_eat;
+	pthread_mutex_unlock(&p->monitor->philo_mutex);
+	if (time_left <= 0)
+		return ;
+	t_think = max_think;
+	if (t_think > time_left)
+		t_think = time_left;
+	started_thinking = current_time();
+	while (get_stop_simulation(p) == false
+			&& (current_time() - started_thinking) < t_think)
+		usleep(THINK_DELAY);
+}
+
+void stagger_start(t_philo *p)
+{
+	if (p->id % 2 != 0)
+	{
+		if (p->monitor->total_philos > 100)
+		{
+			while (get_stop_simulation(p) == false
+				&& (current_time() - get_start_time(p)) < p->time_to_eat)
+				usleep(500);
+		}
+		else
+		{
+			while (get_stop_simulation(p) == false
+			&& (current_time() - get_start_time(p)) < (p->time_to_eat / 2))
+				usleep(500);
+		}
+	}
+}
+
 /**
  * Thread entry point and main loop for a philosopher thread.
  * Waits for the global start time, enters the 
- * think/request/take/eat/sleep loop, and exits when the
+ * think/eat/sleep loop, and exits when the
  * simulation ends or the philosopher reaches its 'must_eat' count.
  *
  * @param arg Pointer to 't_philo' for this thread.
@@ -118,22 +167,19 @@ void	*philo_main(void *arg)
 	wait_for_start(p);
 	if (p->fork2 == NULL)
 		return (handle_single_philo(p));
-	while (true)
+	stagger_start(p);
+	while (get_stop_simulation(p) == false)
 	{
 		philo_print(p, THINKING);
+		if (p->has_eaten != 0)
+			thinking(p);
 		wait_for(p, THINK_DELAY);
-		pthread_mutex_lock(&p->monitor->philo_mutex);
-		if (p->stop_simulation == true)
-			break ;
-		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		request_and_wait_for_fork_access(p);
 		take_forks(p);
 		if (eat_and_check_saturation(p) == FULL)
 			return (NULL);
 		philo_print(p, SLEEPING);
 		wait_for(p, p->time_to_sleep);
 	}
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
 	return (NULL);
 }
 

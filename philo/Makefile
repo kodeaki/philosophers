@@ -1,5 +1,6 @@
 SRC := \
 	forks.c		\
+	get.c		\
 	main.c		\
 	monitor.c	\
 	philo.c		\
@@ -27,3 +28,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+.SECONDARY: $(OBJS)

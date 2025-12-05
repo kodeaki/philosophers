@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:05 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/02 17:00:35 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/05 19:59:12 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,11 +110,10 @@ static int	scan_philos(t_monitor *m, int *dead_idx, int *must_eat_reached)
 }
 
 /**
- * Main monitor loop: periodically scans philosophers for death or completion,
- * grants fork access to the hungriest philosopher. Stops when philosopher scan
- * returns 'EXIT_MONITOR'. 'dead_idx' is set to -1 as to not signify a
- * specific philosopher. Gets set to the index of the dead philosopher
- * in 'scan_philos'.
+ * Main monitor loop: periodically scans philosophers for death or completion.
+ * Stops when philosopher scan returns 'EXIT_MONITOR'.
+ * 'dead_idx' is set to -1 as to not signify a specific philosopher.
+ * 'dead_idx' gets set to the index of the dead philosopher in 'scan_philos'.
  *
  * @param m Monitor structure managing philosophers.
  */
@@ -141,7 +140,6 @@ void	loop_monitor(t_monitor *m)
 			return ;
 		}
 		pthread_mutex_unlock(&m->philo_mutex);
-		grant_or_deny_fork_access(m);
 		usleep(MONITOR_RUNNING_RATE);
 	}
 }
