@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:27 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/05 19:50:15 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/08 16:20:11 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,33 @@ int64_t	current_time(void)
  *
  * @param p Philosopher whose start_time to wait for.
  */
-void	wait_for_start(t_philo *p)
+void	wait_for_start_time(t_philo *p)
 {
 	while (!get_start_time(p))
 		wait_for(p, WAIT_SEGMENT);
 	wait_until(p, get_start_time(p));
+}
+
+/**
+ * Delays the starting time for every odd philosopher
+ */
+void	stagger_starting_times(t_philo *p)
+{
+	if (p->id % 2 != 0)
+	{
+		if (p->monitor->total_philos > 100)
+		{
+			while (get_stop_simulation(p) == false
+				&& (current_time() - get_start_time(p)) < p->time_to_eat)
+				usleep(500);
+		}
+		else
+		{
+			while (get_stop_simulation(p) == false
+				&& (current_time() - get_start_time(p)) < (p->time_to_eat / 2))
+				usleep(500);
+		}
+	}
 }
 
 /**
@@ -48,7 +70,7 @@ void	wait_for_start(t_philo *p)
 void	wait_until(t_philo *p, int64_t target_time)
 {
 	int64_t	difference;
-	
+
 	difference = target_time - current_time();
 	while (get_stop_simulation(p) == false && difference > 0)
 	{

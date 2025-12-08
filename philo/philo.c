@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:09 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/05 20:23:01 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/08 16:19:39 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,49 +34,13 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
 		p->fork1 = &m->forks[0];
 		p->fork2 = NULL;
 	}
-	// else if (index == m->total_philos - 1)
-	// {
-	// 	p->fork1 = &m->forks[0];
-	// 	p->fork2 = &m->forks[index];
-	// }
-	// else
-	// {
-	// 	p->fork1 = &m->forks[index];
-	// 	p->fork2 = &m->forks[(index + 1)];
-	// }
-	p->fork1 = &m->forks[index];
-	p->fork2 = &m->forks[(index + 1) % m->total_philos];
+	else
+	{
+		p->fork1 = &m->forks[index];
+		p->fork2 = &m->forks[(index + 1) % m->total_philos];
+	}
 	p->waiting = false;
 	p->access_granted = false;
-}
-
-/**
- * Update 'last_ate', sleep for 'time_to_eat', release forks,
- * update 'access_granted' and 'has_eaten', and indicate whether the
- * philosopher has reached its required eat count.
- *
- * @param p Philosopher eating.
- * @return 'FULL' if the philosopher reached 'must_eat', otherwise 'KEEP_EATING'
- */
-static int	eat_and_check_saturation(t_philo *p)
-{
-	philo_print(p, EATING);
-	pthread_mutex_lock(&p->monitor->philo_mutex);
-	p->last_ate = current_time();
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
-	wait_for(p, p->time_to_eat);
-	pthread_mutex_unlock(p->fork1);
-	pthread_mutex_unlock(p->fork2);
-	pthread_mutex_lock(&p->monitor->philo_mutex);
-	p->access_granted = false;
-	p->has_eaten++;
-	if (p->has_eaten == p->must_eat)
-	{
-		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		return (FULL);
-	}
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
-	return (KEEP_EATING);
 }
 
 /**
@@ -104,51 +68,41 @@ static void	*handle_single_philo(t_philo *p)
 	return (NULL);
 }
 
-void thinking(t_philo *p)
+/**
+ * Function to retain the stagger set with stagger_starting_times().
+ * Philosophers think for at least 'min_time_to_think' amount of time;
+ * unless time left before the philosopher must eat to avoid dying is less than
+ * the minimum.
+ * 
+ * When total_philos == even || min is set to 25% of slack
+ * When total_philos == odd  || min is set to 75% of slack
+ * 
+ * @param p Philosopher thinking.
+ */
+static void	thinking(t_philo *p)
 {
-	long	slack;
-	long	max_think;
-	long	time_left;
-	long	t_think;
-	long	started_thinking;
+	int64_t	slack;
+	int64_t	min_time_to_think;
+	int64_t	time_left;
+	int64_t	time_to_think;
 
 	slack = p->time_to_die - p->time_to_eat - p->time_to_sleep;
 	if (slack <= 0)
 		return ;
-	max_think = slack / 4;
+	min_time_to_think = slack / 4;
 	if (p->monitor->total_philos % 2 != 0)
-		max_think = slack - (slack / 4);
+		min_time_to_think = slack - (slack / 4);
 	pthread_mutex_lock(&p->monitor->philo_mutex);
-	time_left = p->time_to_die - (current_time() - p->last_ate) - p->time_to_eat;
+	time_left = p->time_to_die
+		- (current_time() - p->last_ate)
+		- p->time_to_eat;
 	pthread_mutex_unlock(&p->monitor->philo_mutex);
 	if (time_left <= 0)
 		return ;
-	t_think = max_think;
-	if (t_think > time_left)
-		t_think = time_left;
-	started_thinking = current_time();
-	while (get_stop_simulation(p) == false
-			&& (current_time() - started_thinking) < t_think)
-		usleep(THINK_DELAY);
-}
-
-void stagger_start(t_philo *p)
-{
-	if (p->id % 2 != 0)
-	{
-		if (p->monitor->total_philos > 100)
-		{
-			while (get_stop_simulation(p) == false
-				&& (current_time() - get_start_time(p)) < p->time_to_eat)
-				usleep(500);
-		}
-		else
-		{
-			while (get_stop_simulation(p) == false
-			&& (current_time() - get_start_time(p)) < (p->time_to_eat / 2))
-				usleep(500);
-		}
-	}
+	time_to_think = min_time_to_think;
+	if (time_to_think > time_left)
+		time_to_think = time_left;
+	wait_for(p, time_to_think);
 }
 
 /**
@@ -164,16 +118,15 @@ void	*philo_main(void *arg)
 {
 	t_philo *const	p = (t_philo*) arg;
 
-	wait_for_start(p);
+	wait_for_start_time(p);
 	if (p->fork2 == NULL)
 		return (handle_single_philo(p));
-	stagger_start(p);
+	stagger_starting_times(p);
 	while (get_stop_simulation(p) == false)
 	{
 		philo_print(p, THINKING);
 		if (p->has_eaten != 0)
 			thinking(p);
-		wait_for(p, THINK_DELAY);
 		take_forks(p);
 		if (eat_and_check_saturation(p) == FULL)
 			return (NULL);

@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:35:53 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/02 17:01:40 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/08 16:22:04 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,9 @@ int	main(int ac, char **av)
 
 	if (parse_args(ac, av, args) == -1)
 	{
-		printf("error: invalid argument");
+		printf("error: invalid argument\n");
+		printf("usage: (nbr_of_philos), (time_to_die), (time_to_eat), "
+			"(time_to_sleep), [times_philo_must_eat]\n");
 		return (-1);
 	}
 	memset(&m, 0, sizeof(m));
@@ -112,5 +114,4 @@ int	main(int ac, char **av)
 	loop_monitor(&m);
 	stop_monitor(&m);
 	free_forks_and_philos(&m);
-	return (0);
 }

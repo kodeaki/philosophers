@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:36 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/05 20:13:50 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/08 16:20:30 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,18 +92,18 @@ void	philo_init(t_philo *philo, t_monitor *m, int index, int args[5]);
 void	*philo_main(void *philo);
 void	philo_print(t_philo *p, enum e_state state);
 
-// forks.c
-void	grant_or_deny_fork_access(t_monitor *m);
-void	request_and_wait_for_fork_access(t_philo *p);
+// forks_and_eat.c
 void	take_forks(t_philo *p);
+int		eat_and_check_saturation(t_philo *p);
 
 // get.c
-bool 	get_stop_simulation(t_philo *p);
-int64_t get_start_time(t_philo *p);
+bool	get_stop_simulation(t_philo *p);
+int64_t	get_start_time(t_philo *p);
 
 // time.c
 int64_t	current_time(void);
-void	wait_for_start(t_philo *p);
+void	wait_for_start_time(t_philo *p);
+void	stagger_starting_times(t_philo *p);
 void	wait_until(t_philo *philo, int64_t target_time);
 void	wait_for(t_philo *philo, int64_t duration);
 

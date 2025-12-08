@@ -1,10 +1,10 @@
 SRC := \
-	forks.c		\
-	get.c		\
-	main.c		\
-	monitor.c	\
-	philo.c		\
-	time.c		\
+	forks_and_eat.c	\
+	get.c			\
+	main.c			\
+	monitor.c		\
+	philo.c			\
+	time.c			\
 
 NAME 	:= philo
 HEADER	:= src/philo.h
