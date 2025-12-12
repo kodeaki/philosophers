@@ -30,6 +30,8 @@ static int	parse_nbr(const char *s)
 		if (n > INT_MAX)
 			return (-1);
 		s++;
+		if (*s && (*s < '0' || *s > '9'))
+			return (-1);
 	}
 	return ((int)n);
 }
