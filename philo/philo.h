@@ -57,8 +57,6 @@ struct s_philo
 	int64_t				start_time;			// protected by (philo_mutex)
 	int64_t				last_ate;			// protected by (philo_mutex)
 	int					has_eaten;			// protected by (philo_mutex)
-	bool				waiting;			// protected by (philo_mutex)
-	bool				access_granted;		// protected by (philo_mutex)
 };
 
 enum e_state

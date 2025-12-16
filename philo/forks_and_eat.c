@@ -54,7 +54,6 @@ int	eat_and_check_saturation(t_philo *p)
 	pthread_mutex_unlock(p->fork1);
 	pthread_mutex_unlock(p->fork2);
 	pthread_mutex_lock(&p->monitor->philo_mutex);
-	p->access_granted = false;
 	p->has_eaten++;
 	if (p->has_eaten == p->must_eat)
 	{

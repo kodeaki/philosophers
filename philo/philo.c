@@ -39,8 +39,6 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
 		p->fork1 = &m->forks[index];
 		p->fork2 = &m->forks[(index + 1) % m->total_philos];
 	}
-	p->waiting = false;
-	p->access_granted = false;
 }
 
 /**
