@@ -1,5 +1,5 @@
 SRC := \
-	forks_and_eat.c	\
+	eat.c	\
 	get.c			\
 	main.c			\
 	monitor.c		\

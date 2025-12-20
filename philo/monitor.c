@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:05 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/12 13:53:57 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/17 03:27:42 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	start_monitor(t_monitor *m, int args[5])
 		philo_init(philo, m, i, args);
 		if (pthread_create(&philo->thread, NULL, philo_main, philo) > 0)
 		{
-			printf("error: pthread_create failure");
+			printf("error: pthread_create failure\n");
 			return (-1);
 		}
 		m->threads_created++;
@@ -85,23 +85,27 @@ int	start_monitor(t_monitor *m, int args[5])
  * @return 'EXIT_MONITOR' when simulation must stop, 'CONTINUE_MONITOR'
  * otherwise.
  */
-static int	scan_philos(t_monitor *m, int *dead_idx, int *must_eat_reached)
+static int	scan_philos(t_monitor *m, int *must_eat_reached)
 {
 	int		i;
-	int64_t	now;
+	// int64_t	now;
+	t_philo	*philo;
 
 	i = 0;
-	now = current_time();
+	// now = current_time();
 	while (i < m->total_philos)
 	{
-		if (m->philos[i].stop_simulation == true)
+		philo = &m->philos[i];
+		if (get_stop_simulation(philo) == true)
 			return (EXIT_MONITOR);
-		if (m->philos[i].has_eaten == m->philos[i].must_eat)
+		if (get_has_eaten(philo) == philo->must_eat)
 			(*must_eat_reached)++;
-		else if (m->philos[i].last_ate + m->philos[i].time_to_die <= now)
+		else if (get_last_ate(philo) + philo->time_to_die <= current_time())
 		{
+			philo_print(&m->philos[i], DEAD);
+			pthread_mutex_lock(&m->philo_mutex);
 			m->philos[i].stop_simulation = true;
-			*dead_idx = i;
+			pthread_mutex_unlock(&m->philo_mutex);
 			return (EXIT_MONITOR);
 		}
 		i++;
@@ -120,26 +124,23 @@ static int	scan_philos(t_monitor *m, int *dead_idx, int *must_eat_reached)
 void	loop_monitor(t_monitor *m)
 {
 	int		i;
-	int		dead_idx;
 	int		must_eat_reached;
 
 	must_eat_reached = 0;
 	while (must_eat_reached < m->total_philos)
 	{
-		dead_idx = -1;
 		must_eat_reached = 0;
-		pthread_mutex_lock(&m->philo_mutex);
-		if (scan_philos(m, &dead_idx, &must_eat_reached) == EXIT_MONITOR)
+		if (scan_philos(m, &must_eat_reached) == EXIT_MONITOR)
 		{
 			i = 0;
 			while (i < m->threads_created)
+			{
+				pthread_mutex_lock(&m->philo_mutex);
 				m->philos[i++].stop_simulation = true;
-			pthread_mutex_unlock(&m->philo_mutex);
-			if (dead_idx != -1)
-				philo_print(&m->philos[dead_idx], DEAD);
+				pthread_mutex_unlock(&m->philo_mutex);
+			}
 			return ;
 		}
-		pthread_mutex_unlock(&m->philo_mutex);
 		usleep(MONITOR_RUNNING_RATE);
 	}
 }
@@ -153,6 +154,11 @@ void	stop_monitor(t_monitor *m)
 {
 	int	i;
 
+	i = 0;
+	pthread_mutex_lock(&m->philo_mutex);
+	while (i < m->threads_created)
+		m->philos[i++].stop_simulation = true;
+	pthread_mutex_unlock(&m->philo_mutex);
 	i = 0;
 	while (i < m->threads_created)
 		pthread_join(m->philos[i++].thread, NULL);

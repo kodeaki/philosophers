@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:27 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/08 16:20:11 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/17 02:30:36 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int64_t	current_time(void)
  */
 void	wait_for_start_time(t_philo *p)
 {
-	while (!get_start_time(p))
+	while (get_stop_simulation(p) == false && get_start_time(p) == 0)
 		wait_for(p, WAIT_SEGMENT);
 	wait_until(p, get_start_time(p));
 }
@@ -48,13 +48,13 @@ void	stagger_starting_times(t_philo *p)
 		{
 			while (get_stop_simulation(p) == false
 				&& (current_time() - get_start_time(p)) < p->time_to_eat)
-				usleep(500);
+				usleep(WAIT_SEGMENT);
 		}
 		else
 		{
 			while (get_stop_simulation(p) == false
 				&& (current_time() - get_start_time(p)) < (p->time_to_eat / 2))
-				usleep(500);
+				usleep(WAIT_SEGMENT);
 		}
 	}
 }

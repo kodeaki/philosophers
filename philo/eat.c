@@ -1,40 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   forks_and_eat.c                                    :+:      :+:    :+:   */
+/*   eat.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 17:29:56 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/08 16:21:04 by tpirinen         ###   ########.fr       */
+/*   Updated: 2025/12/17 03:20:41 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-/**
- * Acquire the two fork mutexes for the philosopher and print take-fork
- * events.
- *
- * @param p Philosopher taking the forks.
- */
-void	take_forks(t_philo *p)
-{
-	if (p->id == p->monitor->total_philos)
-	{
-		pthread_mutex_lock(p->fork1);
-		philo_print(p, TOOK_FORK);
-		pthread_mutex_lock(p->fork2);
-		philo_print(p, TOOK_FORK);
-	}
-	else
-	{
-		pthread_mutex_lock(p->fork2);
-		philo_print(p, TOOK_FORK);
-		pthread_mutex_lock(p->fork1);
-		philo_print(p, TOOK_FORK);
-	}
-}
 
 /**
  * Update 'last_ate', sleep for 'time_to_eat', release forks,
@@ -55,11 +31,8 @@ int	eat_and_check_saturation(t_philo *p)
 	pthread_mutex_unlock(p->fork2);
 	pthread_mutex_lock(&p->monitor->philo_mutex);
 	p->has_eaten++;
-	if (p->has_eaten == p->must_eat)
-	{
-		pthread_mutex_unlock(&p->monitor->philo_mutex);
-		return (FULL);
-	}
 	pthread_mutex_unlock(&p->monitor->philo_mutex);
+	if (get_has_eaten(p) == p->must_eat)
+		return (FULL);
 	return (KEEP_EATING);
 }
