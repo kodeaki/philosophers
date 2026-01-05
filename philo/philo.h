@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:36 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/17 03:12:47 by tpirinen         ###   ########.fr       */
+/*   Updated: 2026/01/05 15:35:27 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <limits.h>	//	- INT_MAX
 
 # define MONITOR_RUNNING_RATE 100		// (microseconds)
-# define THREAD_START_DELAY 100000		// (microseconds)
+# define THREAD_START_DELAY 10000		// (microseconds)
 # define THINK_DELAY 100				// (microseconds)
 # define WAIT_SEGMENT 100				// (microseconds)
 
@@ -90,14 +90,13 @@ void	philo_init(t_philo *philo, t_monitor *m, int index, int args[5]);
 void	*philo_main(void *philo);
 void	philo_print(t_philo *p, enum e_state state);
 
-// eat.c
+// forks_and_eat.c
+void	take_forks(t_philo *p);
 int		eat_and_check_saturation(t_philo *p);
 
 // get.c
 bool	get_stop_simulation(t_philo *p);
 int64_t	get_start_time(t_philo *p);
-int		get_has_eaten(t_philo *p);
-int64_t	get_last_ate(t_philo *p);
 
 // time.c
 int64_t	current_time(void);

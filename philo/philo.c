@@ -6,7 +6,7 @@
 /*   By: tpirinen <tpirinen@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/28 00:36:09 by tpirinen          #+#    #+#             */
-/*   Updated: 2025/12/17 03:16:35 by tpirinen         ###   ########.fr       */
+/*   Updated: 2026/01/05 15:34:44 by tpirinen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,10 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
 		p->fork1 = &m->forks[0];
 		p->fork2 = NULL;
 	}
-	else if (p->id == m->total_philos)
-	{
-		p->fork1 = &m->forks[0];
-		p->fork2 = &m->forks[index];
-	}
 	else
 	{
 		p->fork1 = &m->forks[index];
-		p->fork2 = &m->forks[(index + 1)];
+		p->fork2 = &m->forks[(index + 1) % m->total_philos];
 	}
 }
 
@@ -55,19 +50,11 @@ void	philo_init(t_philo *p, t_monitor *m, int index, int args[5])
  */
 static void	*handle_single_philo(t_philo *p)
 {
-	int64_t	time_to_die;
-
 	pthread_mutex_lock(p->fork1);
 	philo_print(p, TOOK_FORK);
-	pthread_mutex_lock(&p->monitor->philo_mutex);
-	time_to_die = p->time_to_die;
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
-	wait_for(p, time_to_die);
+	wait_for(p, p->time_to_die);
 	pthread_mutex_unlock(p->fork1);
 	philo_print(p, DEAD);
-	pthread_mutex_lock(&p->monitor->philo_mutex);
-	p->stop_simulation = true;
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
 	return (NULL);
 }
 
@@ -88,7 +75,6 @@ static void	thinking(t_philo *p)
 	int64_t	min_time_to_think;
 	int64_t	time_left;
 	int64_t	time_to_think;
-	int64_t	last_ate;
 
 	slack = p->time_to_die - p->time_to_eat - p->time_to_sleep;
 	if (slack <= 0)
@@ -97,11 +83,10 @@ static void	thinking(t_philo *p)
 	if (p->monitor->total_philos % 2 != 0)
 		min_time_to_think = slack - (slack / 4);
 	pthread_mutex_lock(&p->monitor->philo_mutex);
-	last_ate = p->last_ate;
-	pthread_mutex_unlock(&p->monitor->philo_mutex);
 	time_left = p->time_to_die
-		- (current_time() - last_ate)
+		- (current_time() - p->last_ate)
 		- p->time_to_eat;
+	pthread_mutex_unlock(&p->monitor->philo_mutex);
 	if (time_left <= 0)
 		return ;
 	time_to_think = min_time_to_think;
@@ -130,12 +115,9 @@ void	*philo_main(void *arg)
 	while (get_stop_simulation(p) == false)
 	{
 		philo_print(p, THINKING);
-		if (p->has_eaten != 0 && (p->time_to_eat * 4 > p->time_to_die))
+		if (p->has_eaten != 0)
 			thinking(p);
-		pthread_mutex_lock(p->fork2);
-		philo_print(p, TOOK_FORK);
-		pthread_mutex_lock(p->fork1);
-		philo_print(p, TOOK_FORK);
+		take_forks(p);
 		if (eat_and_check_saturation(p) == FULL)
 			return (NULL);
 		philo_print(p, SLEEPING);
